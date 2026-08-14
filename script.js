@@ -279,7 +279,7 @@
     apiConfig.baseUrl.indexOf('COLE_AQUI') !== 0);
 
   if (!apiReady) {
-    console.warn('Servidor de envio não configurado — preencha server-config.js (veja server/README.md). O botão ENVIAR vai gerar o PDF mas não vai enviar o e-mail.');
+    console.warn('Servidor de envio não configurado — preencha server-config.js (veja server/README.md). O botão ENVIAR vai gerar o PDF mas não vai enviar.');
   }
 
   function isValidEmail(value) {
@@ -301,21 +301,15 @@
     sendBtn.disabled = disabled;
   }
 
-  function enviarCertificadoPorEmail(email, pdfBase64) {
-    var url = apiConfig.baseUrl.replace(/\/+$/, '') + '/api/enviar-certificado';
+  function postCertificado(path, payload) {
+    var url = apiConfig.baseUrl.replace(/\/+$/, '') + path;
     return fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Totem-Key': apiConfig.apiKey || ''
       },
-      body: JSON.stringify({
-        email: email,
-        nome: currentRecord.nome,
-        curso: currentRecord.curso,
-        dataConclusao: currentRecord.dataConclusao,
-        pdfBase64: pdfBase64
-      })
+      body: JSON.stringify(payload)
     }).then(function (res) {
       if (res.ok) return;
       return res.json().catch(function () { return {}; }).then(function (body) {
@@ -324,10 +318,21 @@
     });
   }
 
+  function enviarCertificadoPorEmail(email, pdfBase64) {
+    return postCertificado('/api/enviar-certificado', {
+      email: email,
+      nome: currentRecord.nome,
+      curso: currentRecord.curso,
+      dataConclusao: currentRecord.dataConclusao,
+      pdfBase64: pdfBase64
+    });
+  }
+
   sendBtn.addEventListener('click', function () {
     clearSendError();
-    var email = emailInput.value.trim();
-    if (!isValidEmail(email)) {
+
+    var destino = emailInput.value.trim();
+    if (!isValidEmail(destino)) {
       showSendError('Digite um e-mail válido.');
       emailInput.focus();
       return;
@@ -346,7 +351,7 @@
           throw { serverNotConfigured: true };
         }
         setSendBtnState('Enviando…', true);
-        return enviarCertificadoPorEmail(email, pdfBase64);
+        return enviarCertificadoPorEmail(destino, pdfBase64);
       })
       .then(function () {
         setSendBtnState('Enviado!', true);
@@ -356,9 +361,9 @@
       })
       .catch(function (err) {
         if (err && err.serverNotConfigured) {
-          showSendError('Envio de e-mail ainda não configurado (veja server/README.md).');
+          showSendError('Envio ainda não configurado (veja server/README.md).');
         } else {
-          console.error('Falha ao enviar certificado por e-mail:', err);
+          console.error('Falha ao enviar certificado:', err);
           showSendError((err && err.message) || 'Não foi possível enviar. Tente novamente.');
         }
         setSendBtnState(originalLabel, false);

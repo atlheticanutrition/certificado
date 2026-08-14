@@ -8,6 +8,6 @@
    gera o PDF normalmente mas mostra um aviso em vez de enviar.
    =================================================================== */
 window.TOTEM_API_CONFIG = {
-  baseUrl: 'COLE_AQUI_A_URL_DO_SERVIDOR', // ex: https://certificados-api.suaempresa.com
-  apiKey: 'COLE_AQUI_A_MESMA_API_KEY_DO_ENV_DO_SERVIDOR'
+  baseUrl: 'http://localhost:3001', // teste local — trocar pela URL do VPS antes de publicar
+  apiKey: 'test-key-12345'
 };
