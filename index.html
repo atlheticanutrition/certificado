@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Consulta de Certificado — Atlhetica Nutrition</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="stage-wrapper">
+  <div id="stage">
+
+    <!-- ============================================================ -->
+    <!-- TELA 1 — BUSCAR CERTIFICADO                                   -->
+    <!-- ============================================================ -->
+    <section class="screen" id="screen-search" data-active="true">
+      <img class="bg-photo" src="assets/bg-post.png" alt="" />
+
+      <aside class="sidebar">
+        <img class="logo" src="assets/logo-atlhetica.svg" alt="Atlhetica Nutrition" />
+
+        <div class="text-group">
+          <h1 class="title">Consulta de<br />Certificado</h1>
+          <p class="instructions">Digite os últimos 4 dígitos do seu CPF e o ano de nascimento para localizar seu certificado.</p>
+        </div>
+
+        <div class="deco-bar deco-bar--white" aria-hidden="true"></div>
+        <div class="deco-bar deco-bar--gray" aria-hidden="true"></div>
+      </aside>
+
+      <div class="divider"></div>
+
+      <div class="right-panel">
+
+        <div class="field-group">
+          <p class="field-label">CPF (ÚLTIMOS 4 DÍGITOS)</p>
+          <div class="digit-row" id="cpf-row">
+            <div class="digit-box" data-field="cpf" data-index="0"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="cpf" data-index="1"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="cpf" data-index="2"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="cpf" data-index="3"><span class="digit">–</span></div>
+          </div>
+        </div>
+
+        <div class="field-group field-group--ano">
+          <p class="field-label">ANO DE NASCIMENTO</p>
+          <div class="digit-row" id="ano-row">
+            <div class="digit-box" data-field="ano" data-index="0"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="ano" data-index="1"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="ano" data-index="2"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="ano" data-index="3"><span class="digit">–</span></div>
+          </div>
+        </div>
+
+        <p class="error-message" id="search-error" hidden></p>
+
+        <div class="keypad" id="keypad">
+          <button class="key" type="button" data-key="1">1</button>
+          <button class="key" type="button" data-key="2">2</button>
+          <button class="key" type="button" data-key="3">3</button>
+          <button class="key" type="button" data-key="4">4</button>
+          <button class="key" type="button" data-key="5">5</button>
+          <button class="key" type="button" data-key="6">6</button>
+          <button class="key" type="button" data-key="7">7</button>
+          <button class="key" type="button" data-key="8">8</button>
+          <button class="key" type="button" data-key="9">9</button>
+          <button class="key key--back" type="button" data-key="back">⌫</button>
+          <button class="key" type="button" data-key="0">0</button>
+          <button class="key key--confirm" type="button" data-key="confirm">✓</button>
+        </div>
+
+        <button class="submit-button" type="button" id="submit-search">Buscar Certificado</button>
+
+        <p class="support-text">Em caso de dúvidas, procure o suporte no balcão.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TELA 2 — RESULTADO ENCONTRADO                                 -->
+    <!-- ============================================================ -->
+    <section class="screen" id="screen-result" data-active="false">
+      <aside class="sidebar sidebar--result">
+        <img class="logo" src="assets/logo-atlhetica.svg" alt="Atlhetica Nutrition" />
+
+        <div class="check-badge">
+          <img src="assets/check-badge.svg" alt="" />
+          <span>✓</span>
+        </div>
+
+        <h1 class="title title--result">Certificado<br />Localizado!</h1>
+        <p class="instructions instructions--result">Confira os dados abaixo antes de gerar o certificado.</p>
+
+        <div class="result-divider"></div>
+
+        <div class="result-field">
+          <p class="result-label">NOME COMPLETO</p>
+          <p class="result-value" id="result-nome">—</p>
+        </div>
+
+        <div class="result-fields-row">
+          <div class="result-field result-field--small">
+            <p class="result-label result-label--small">CURSO / TREINAMENTO</p>
+            <p class="result-value result-value--small" id="result-curso">—</p>
+          </div>
+          <div class="result-field result-field--small">
+            <p class="result-label result-label--small">DATA DE CONCLUSÃO</p>
+            <p class="result-value result-value--small" id="result-data">—</p>
+          </div>
+        </div>
+
+        <div class="flex-spacer"></div>
+
+        <p class="support-text support-text--result">Em caso de dúvidas, procure o suporte no balcão.</p>
+      </aside>
+
+      <div class="divider"></div>
+
+      <div class="right-panel right-panel--result">
+        <div class="certificate-preview">
+          <img class="certificate-bg" src="assets/Slide2.jpg" alt="Pré-visualização do certificado" />
+          <p class="cert-nome" id="cert-nome">—</p>
+          <div class="cert-paragrafo-box">
+            <p class="cert-paragrafo" id="cert-paragrafo">—</p>
+          </div>
+        </div>
+
+        <p class="field-label field-label--email">E-MAIL</p>
+        <input class="email-input" id="email-input" type="email" inputmode="email" placeholder="seu@email.com" autocomplete="off" />
+        <p class="error-message" id="send-error" hidden></p>
+
+        <button class="submit-button submit-button--send" type="button" id="send-button">ENVIAR</button>
+        <button class="secondary-button" type="button" id="new-search-button">Nova Consulta</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="server-config.js"></script>
+<script src="certificados-data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

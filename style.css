@@ -1,0 +1,539 @@
+/* =====================================================================
+   Consulta de Certificado — Atlhetica Nutrition
+   Totem touch screen 1920x1080 (design: Figma "Sem título", node 1:81 / 1:135)
+   ===================================================================== */
+
+@font-face {
+  font-family: 'Chakra Petch';
+  src: url('FONTS/ChakraPetch-Light.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Chakra Petch';
+  src: url('FONTS/ChakraPetch-Bold.ttf') format('truetype');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-black: #000000;
+  --bg-sidebar: #0d0d0d;
+  --bg-input: #1c1c1e;
+  --bg-key-back: #151515;
+  --border-default: #3a3a3c;
+  --text-white: #ffffff;
+  --text-secondary: #9a9a9e;
+  --text-tertiary: #6e6e72;
+  --text-placeholder: #8c8c8f;
+  --accent-green: #3abf6e;
+  --accent-red: #e05252;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-black);
+  overflow: hidden;
+  font-family: 'Chakra Petch', sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#stage-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-black);
+}
+
+#stage {
+  width: 1920px;
+  height: 1080px;
+  flex-shrink: 0;
+  position: relative;
+  background: var(--bg-black);
+  overflow: hidden;
+  transform-origin: center center;
+}
+
+/* ---------------------------------------------------------------------
+   Screen switching
+   --------------------------------------------------------------------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 1920px;
+  height: 1080px;
+}
+.screen[data-active="true"] {
+  display: flex;
+  align-items: stretch;
+}
+
+/* ---------------------------------------------------------------------
+   Shared: background photo, divider, sidebar
+   --------------------------------------------------------------------- */
+.bg-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.divider {
+  width: 1px;
+  height: 1080px;
+  background: var(--border-default);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar {
+  position: relative;
+  z-index: 1;
+  width: 520px;
+  height: 1080px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 80px 60px 0;
+}
+
+.logo {
+  width: 200px;
+  height: 55.67px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.text-group {
+  margin-top: 217px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 19px;
+  width: 400px;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 56px;
+  line-height: normal;
+  color: var(--text-white);
+  width: 400px;
+}
+
+.instructions {
+  margin: 0;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: normal;
+  color: var(--text-secondary);
+  width: 400px;
+}
+
+/* Decorative diagonal bars (search screen) */
+.deco-bar {
+  position: absolute;
+  width: 14px;
+  border-radius: 7px;
+  transform: rotate(28deg);
+}
+.deco-bar--white {
+  height: 420px;
+  background: var(--text-white);
+  left: 330.6px;
+  top: 678.7px;
+}
+.deco-bar--gray {
+  height: 260px;
+  background: var(--text-tertiary);
+  left: 418.15px;
+  top: 808.1px;
+}
+
+/* ---------------------------------------------------------------------
+   Right panel — search screen
+   --------------------------------------------------------------------- */
+.right-panel {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 0;
+  height: 1080px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 0 28px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 23px;
+  width: 800px;
+  margin-bottom: 40px;
+}
+.field-group--ano {
+  margin-bottom: 60px;
+}
+
+.field-label {
+  margin: 0;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--text-secondary);
+}
+
+.digit-row {
+  display: flex;
+  gap: 24px;
+}
+
+.digit-box {
+  width: 182px;
+  height: 120px;
+  border-radius: 14px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 40px;
+  color: var(--text-tertiary);
+  transition: border-color 0.12s ease, border-width 0.12s ease;
+}
+.digit-box .digit {
+  pointer-events: none;
+}
+.digit-box[data-active="true"] {
+  border: 3px solid var(--text-white);
+}
+.digit-box[data-filled="true"] {
+  color: var(--text-white);
+}
+
+.error-message {
+  width: 800px;
+  margin: -20px 0 20px;
+  color: var(--accent-red);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 253.333px);
+  grid-auto-rows: 80px;
+  gap: 12px 20px;
+  margin-bottom: 40px;
+}
+
+.key {
+  width: 253.333px;
+  height: 80px;
+  border-radius: 14px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-default);
+  color: var(--text-white);
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+}
+.key:active {
+  background: #262628;
+}
+.key--back {
+  background: var(--bg-key-back);
+  color: var(--text-secondary);
+}
+.key--back:active {
+  background: #1e1e1e;
+}
+.key--confirm {
+  background: var(--text-white);
+  border-color: var(--text-white);
+  color: #0d0d0d;
+}
+.key--confirm:active {
+  background: #e6e6e6;
+}
+
+.submit-button {
+  width: 800px;
+  height: 90px;
+  border-radius: 16px;
+  background: var(--text-white);
+  border: none;
+  color: #0d0d0d;
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+.submit-button:active {
+  background: #e6e6e6;
+}
+.submit-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.support-text {
+  margin: 0;
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--text-tertiary);
+  text-align: center;
+  width: 800px;
+}
+
+/* ---------------------------------------------------------------------
+   Result screen — sidebar
+   --------------------------------------------------------------------- */
+.sidebar--result {
+  padding: 68px 60px 79px;
+}
+
+.check-badge {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-top: 147px;
+  flex-shrink: 0;
+}
+.check-badge img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.check-badge span {
+  position: relative;
+  display: block;
+  width: 64px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 64px;
+  color: var(--text-white);
+}
+
+.title--result {
+  margin-top: 26px;
+  font-size: 44px;
+}
+
+.instructions--result {
+  margin-top: 1px;
+  font-size: 20px;
+}
+
+.result-divider {
+  width: 400px;
+  height: 1px;
+  background: var(--border-default);
+  margin-top: 28px;
+}
+
+.result-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 29px;
+}
+
+.result-label {
+  margin: 0;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.result-label--small {
+  font-size: 16px;
+}
+
+.result-value {
+  margin: 0;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--text-white);
+  width: 400px;
+}
+
+.result-fields-row {
+  display: flex;
+  gap: 19px;
+  margin-top: 46px;
+  white-space: nowrap;
+}
+
+.result-field--small {
+  margin-top: 0;
+}
+
+.result-value--small {
+  font-size: 22px;
+  width: auto;
+}
+
+.flex-spacer {
+  flex: 1 0 0;
+  min-height: 20px;
+}
+
+.support-text--result {
+  width: 400px;
+  text-align: left;
+  font-size: 16px;
+}
+
+/* ---------------------------------------------------------------------
+   Result screen — right panel
+   --------------------------------------------------------------------- */
+.right-panel--result {
+  padding: 48px 0 51px;
+}
+
+.certificate-preview {
+  position: relative;
+  width: 937.6px;
+  height: 662.67px;
+  border-radius: 4px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.certificate-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Nome do participante — cai no espaço em branco entre "Conferido a" e o
+   filete horizontal da arte (não precisa de fundo: essa área já é preta
+   na imagem base). */
+.cert-nome {
+  position: absolute;
+  left: 67.5px;
+  top: 313px;
+  width: 535px;
+  margin: 0;
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.2;
+  color: var(--text-white);
+  text-align: center;
+}
+
+/* Parágrafo (curso + data) e a linha "Matão, ..." — cobre com preto sólido
+   o texto placeholder já impresso na arte e escreve o texto real por cima,
+   nas mesmas coordenadas/tipografia do modelo. */
+.cert-paragrafo-box {
+  position: absolute;
+  left: 67.5px;
+  top: 387.65px;
+  width: 535px;
+  height: 156px;
+  background: #000000;
+  overflow: hidden;
+}
+
+.cert-paragrafo {
+  margin: 0;
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--text-white);
+  text-align: center;
+}
+.cert-paragrafo b {
+  font-weight: 700;
+}
+.cert-paragrafo .cert-local-data {
+  display: block;
+  margin-top: 26px;
+}
+
+.field-label--email {
+  width: 886.516px;
+  margin-bottom: 9px;
+}
+
+.email-input {
+  width: 886.516px;
+  height: 64px;
+  border-radius: 12.445px;
+  background: var(--bg-input);
+  border: 1.167px solid var(--border-default);
+  color: var(--text-white);
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  padding: 0 24px;
+  margin-bottom: 16px;
+}
+.email-input::placeholder {
+  color: var(--text-placeholder);
+}
+.email-input:focus {
+  outline: none;
+  border-color: var(--text-white);
+}
+
+.submit-button--send {
+  width: 886.516px;
+  height: 70.001px;
+  border-radius: 12.445px;
+  font-size: 20.223px;
+  margin-bottom: 16px;
+}
+
+.secondary-button {
+  width: 886.516px;
+  height: 54.445px;
+  border-radius: 12.445px;
+  background: var(--bg-input);
+  border: 1.167px solid var(--border-default);
+  color: var(--text-white);
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: 17.111px;
+  cursor: pointer;
+}
+.secondary-button:active {
+  background: #262628;
+}
