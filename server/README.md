@@ -7,10 +7,17 @@ usa o e-mail da empresa.
 
 ## 1. Configurar o app no Azure AD / Entra ID
 
-Se você já registrou o app (portal Azure → **Entra ID** → **Registros de
-aplicativo**) e tem o **Application (client) ID** e o **Directory (tenant)
-ID**, faltam dois passos — o Object ID sozinho não é suficiente para
-autenticar:
+App já registrado (portal Azure → **Entra ID** → **Registros de
+aplicativo**), com estes valores (já preenchidos em `AZURE_TENANT_ID` e
+`AZURE_CLIENT_ID` no `.env`):
+
+- **Directory (tenant) ID:** `2408fe10-48e1-472e-bfb1-0ac7683da3d2`
+- **Application (client) ID:** `1cf73857-9528-4960-90d6-51af33c94b82`
+- Object ID (`4d065500-6d85-49e2-8b5c-440eee073015`) é só o identificador
+  interno do registro no Azure — não é usado em lugar nenhum do `.env`
+  nem na autenticação.
+
+Faltam dois passos — nenhum dos IDs acima sozinho autentica:
 
 1. **Criar o client secret:** no app → **Certificados e segredos** → **Novo
    segredo do cliente**. Copie o **Value** assim que for gerado (some da
@@ -23,14 +30,13 @@ autenticar:
 3. **Escolher a caixa de e-mail remetente:** app-only `Mail.Send` pode
    enviar como qualquer caixa do tenant, então defina em
    `GRAPH_SENDER_EMAIL` o endereço real que deve aparecer como remetente
-   (ex: `certificados@suaempresa.com`). Essa caixa precisa existir de
-   verdade (licenciada) no Microsoft 365.
+   (já preenchido no `.env` como `endomarketing@adslab.com.br`). Essa
+   caixa precisa existir de verdade (licenciada) no Microsoft 365.
    - *Opcional, mais seguro:* restrinja via uma **Application Access
      Policy** (PowerShell do Exchange Online) para que o app só possa
      enviar por essa caixa específica, em vez de qualquer uma do tenant.
 
-Anote os 3 valores (tenant, client ID, client secret) e o
-`GRAPH_SENDER_EMAIL` — eles vão no `.env` no passo seguinte.
+Só falta gerar o `AZURE_CLIENT_SECRET` (passo 1 acima) e colar no `.env`.
 
 ## 2. Subir o servidor no VPS
 
@@ -92,52 +98,20 @@ No projeto do totem, abra `server-config.js` e preencha:
 
 ```js
 window.TOTEM_API_CONFIG = {
-  baseUrl: 'https://certificados-api.suaempresa.com',
+  baseUrl: 'https://certificados-api.suaempresa.com', // URL do SERVIDOR (passo 2), não do site do totem
   apiKey: 'a-mesma-api-key-que-voce-colocou-no-.env-do-servidor'
 };
 ```
 
+⚠️ `baseUrl` é o endereço do **backend Node** (`server/`, passo 2 acima),
+rodando no VPS — não a URL onde o totem em si é hospedado (ex:
+`atlheticanutrition.github.io/...`, se o front-end for publicado no
+GitHub Pages). São duas coisas diferentes: o totem (front-end estático)
+chama esse `baseUrl` para enviar o e-mail; o `baseUrl` não pode apontar
+para o próprio totem.
+
 Recarregue a página do totem e teste o fluxo completo (buscar
 certificado → digitar e-mail → ENVIAR).
-
-## 4. WhatsApp (opcional)
-
-> ⚠️ **Leia antes de ativar.** O envio por WhatsApp usa
-> [Baileys](https://github.com/WhiskeySockets/Baileys), uma biblioteca
-> **não-oficial** que conecta como um WhatsApp Web comum — não é a API
-> oficial da Meta. Isso significa: sem aprovação prévia, sem custo por
-> mensagem, envia o PDF livremente. Em troca, **está fora dos Termos de
-> Uso do WhatsApp** para automação e há risco real do número ser
-> banido, principalmente com uso contínuo. Recomendações:
-> - Use um número **dedicado** ao totem, não o WhatsApp pessoal de
->   alguém nem o número principal da empresa.
-> - Se o número for banido, o único remédio é trocar de número (ou
->   migrar pra API oficial da Meta — outra conversa, outro custo).
-> - Mantenha o volume baixo (é um totem de certificados, não disparo em
->   massa) — isso reduz bastante o risco de detecção.
-
-### Ativar
-
-1. No `.env`, defina `WHATSAPP_ENABLED=true`.
-2. Suba o servidor (`node index.js` ou `pm2 restart toten-certificado`)
-   e acompanhe o log/terminal — um QR code aparece ali.
-3. Escaneie com o WhatsApp do celular da empresa: **Aparelhos
-   conectados → Conectar um aparelho**.
-4. Quando aparecer `WhatsApp conectado.` no log, está pronto. A sessão
-   fica salva em `server/whatsapp-auth/` (nunca comite essa pasta — dá
-   acesso total à conta do WhatsApp).
-
-Se preferir escanear pelo navegador em vez do terminal do VPS, acesse
-(com o header `X-Totem-Key`, ex. via uma extensão de API ou
-`curl -H "X-Totem-Key: SUA_CHAVE" https://.../api/whatsapp-qr -o qr.png`)
-o endpoint `GET /api/whatsapp-qr`, que devolve o QR atual como PNG.
-
-### Se a sessão cair ou for desconectada
-
-- Queda de conexão normal: o servidor reconecta sozinho.
-- **Logout** (desconectado manualmente pelo celular, ou banido): apague
-  a pasta `server/whatsapp-auth/` e reinicie o servidor para escanear
-  um QR code novo.
 
 ## Segurança — o que esse endpoint tem e o que ele não tem
 
