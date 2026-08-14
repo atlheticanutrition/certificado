@@ -1,0 +1,382 @@
+(function () {
+  'use strict';
+
+  /* ===================================================================
+     Stage scaling — keeps the 1920x1080 kiosk layout pixel-perfect on
+     any actual monitor resolution/window size.
+     =================================================================== */
+  var stage = document.getElementById('stage');
+  function scaleStage() {
+    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = 'scale(' + scale + ')';
+  }
+  scaleStage();
+  window.addEventListener('resize', scaleStage);
+
+  // Kiosk hardening: no context menu, no accidental text selection/drag.
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  document.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+  /* ===================================================================
+     Certificate database
+     Loaded from certificados-data.js (generated from
+     assets/Modelo Certificado.xlsx — see tools/README.md to regenerate
+     it after editing the spreadsheet).
+     =================================================================== */
+  var CERTIFICADOS_DATA = window.CERTIFICADOS_DATA || [];
+  if (!window.CERTIFICADOS_DATA) {
+    console.warn('certificados-data.js não foi carregado — nenhum certificado disponível para busca.');
+  }
+
+  function lookupCertificado(cpf4, anoNascimento) {
+    return CERTIFICADOS_DATA.find(function (r) {
+      return r.cpf4 === cpf4 && r.anoNascimento === anoNascimento;
+    }) || null;
+  }
+
+  /* ===================================================================
+     Screen switching
+     =================================================================== */
+  var screens = {
+    search: document.getElementById('screen-search'),
+    result: document.getElementById('screen-result')
+  };
+
+  function showScreen(name) {
+    Object.keys(screens).forEach(function (key) {
+      screens[key].setAttribute('data-active', key === name ? 'true' : 'false');
+    });
+  }
+
+  /* ===================================================================
+     Digit fields (CPF + Ano de nascimento)
+     =================================================================== */
+  var fields = {
+    cpf: { length: 4, values: [], boxes: [].slice.call(document.querySelectorAll('#cpf-row .digit-box')) },
+    ano: { length: 4, values: [], boxes: [].slice.call(document.querySelectorAll('#ano-row .digit-box')) }
+  };
+  var fieldOrder = ['cpf', 'ano'];
+  var activeField = 'cpf';
+
+  var errorEl = document.getElementById('search-error');
+  var submitBtn = document.getElementById('submit-search');
+
+  function renderField(name) {
+    var field = fields[name];
+    field.boxes.forEach(function (box, i) {
+      var digitEl = box.querySelector('.digit');
+      var hasValue = i < field.values.length;
+      digitEl.textContent = hasValue ? field.values[i] : '–';
+      box.setAttribute('data-filled', hasValue ? 'true' : 'false');
+      box.setAttribute('data-active', (name === activeField && i === field.values.length) ? 'true' : 'false');
+    });
+  }
+
+  function renderAll() {
+    fieldOrder.forEach(renderField);
+  }
+
+  function isFieldComplete(name) {
+    return fields[name].values.length === fields[name].length;
+  }
+
+  function isFormComplete() {
+    return fieldOrder.every(isFieldComplete);
+  }
+
+  function clearError() {
+    errorEl.hidden = true;
+    errorEl.textContent = '';
+  }
+
+  function pressDigit(digit) {
+    clearError();
+    var field = fields[activeField];
+    if (field.values.length >= field.length) return;
+    field.values.push(digit);
+
+    // Auto-advance to the next field once this one is full.
+    if (field.values.length === field.length) {
+      var idx = fieldOrder.indexOf(activeField);
+      if (idx < fieldOrder.length - 1) {
+        activeField = fieldOrder[idx + 1];
+      }
+    }
+    renderAll();
+  }
+
+  function pressBack() {
+    clearError();
+    var field = fields[activeField];
+    if (field.values.length > 0) {
+      field.values.pop();
+    } else {
+      var idx = fieldOrder.indexOf(activeField);
+      if (idx > 0) {
+        activeField = fieldOrder[idx - 1];
+        fields[activeField].values.pop();
+      }
+    }
+    renderAll();
+  }
+
+  // Certificado atualmente exibido na tela de resultado (usado ao montar
+  // o e-mail: nome, curso e data entram nas variáveis do template).
+  var currentRecord = null;
+
+  function handleSubmit() {
+    if (!isFormComplete()) {
+      errorEl.textContent = 'Preencha o CPF e o ano de nascimento completos.';
+      errorEl.hidden = false;
+      return;
+    }
+    clearError();
+
+    var cpf4 = fields.cpf.values.join('');
+    var ano = fields.ano.values.join('');
+    var record = lookupCertificado(cpf4, ano);
+
+    if (!record) {
+      errorEl.textContent = 'Certificado não localizado, em caso de dúvida consultar o R.H.';
+      errorEl.hidden = false;
+      return;
+    }
+
+    currentRecord = record;
+    document.getElementById('result-nome').textContent = record.nome;
+    document.getElementById('result-curso').textContent = record.curso;
+    document.getElementById('result-data').textContent = record.dataConclusao;
+    preencherCertificado(record);
+    showScreen('result');
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  /* Preenche nome/curso/data por cima da arte do certificado (Slide2). */
+  function preencherCertificado(record) {
+    document.getElementById('cert-nome').textContent = record.nome;
+    document.getElementById('cert-paragrafo').innerHTML =
+      'Por participar e concluir com aproveitamento o <b>' + escapeHtml(record.curso) + '</b> ' +
+      'concedido pela Empresa ADS LABORATÓRIO NUTRICIONAL LTDA. Realizado em ' + escapeHtml(record.dataConclusao) + '.' +
+      '<span class="cert-local-data">Matão, ' + escapeHtml(record.dataConclusao) + '.</span>';
+  }
+
+  document.getElementById('keypad').addEventListener('click', function (e) {
+    var btn = e.target.closest('.key');
+    if (!btn) return;
+    var key = btn.getAttribute('data-key');
+    if (key === 'back') {
+      pressBack();
+    } else if (key === 'confirm') {
+      handleSubmit();
+    } else {
+      pressDigit(key);
+    }
+  });
+
+  submitBtn.addEventListener('click', handleSubmit);
+
+  function resetSearch() {
+    fields.cpf.values = [];
+    fields.ano.values = [];
+    activeField = 'cpf';
+    clearError();
+    renderAll();
+  }
+
+  /* ===================================================================
+     Geração do PDF do certificado (imagem + nome/curso/data já
+     preenchidos na tela) usando html2canvas + jsPDF, 100% no navegador.
+     =================================================================== */
+
+  // Orçamento de tamanho do PDF final (em caracteres base64). Nosso
+  // próprio servidor aceita até ~4.000.000 chars (server/index.js) —
+  // mantemos uma folga generosa aqui, só para não gerar PDFs enormes
+  // à toa (e-mail mais rápido de enviar e de a pessoa receber).
+  var PDF_BASE64_BUDGET = 1500000;
+
+  // Tenta várias qualidades de JPEG (e, se preciso, reduz a resolução)
+  // até o PDF final caber no orçamento de tamanho.
+  function canvasToPdfBase64WithinBudget(canvas) {
+    var qualities = [0.85, 0.7, 0.55, 0.4, 0.3];
+    var workingCanvas = canvas;
+    var attempts = 0;
+
+    function buildPdf(cv, quality) {
+      var imgData = cv.toDataURL('image/jpeg', quality);
+      var jsPDF = window.jspdf.jsPDF;
+      var pdf = new jsPDF({
+        orientation: cv.width >= cv.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [cv.width, cv.height]
+      });
+      pdf.addImage(imgData, 'JPEG', 0, 0, cv.width, cv.height);
+      var datauri = pdf.output('datauristring');
+      return datauri.substring(datauri.indexOf('base64,') + 'base64,'.length);
+    }
+
+    function downscale(cv, factor) {
+      var out = document.createElement('canvas');
+      out.width = Math.round(cv.width * factor);
+      out.height = Math.round(cv.height * factor);
+      out.getContext('2d').drawImage(cv, 0, 0, out.width, out.height);
+      return out;
+    }
+
+    while (attempts < 3) {
+      for (var i = 0; i < qualities.length; i++) {
+        var base64 = buildPdf(workingCanvas, qualities[i]);
+        if (base64.length <= PDF_BASE64_BUDGET) {
+          return base64;
+        }
+      }
+      // Nenhuma qualidade coube — reduz a resolução e tenta de novo.
+      workingCanvas = downscale(workingCanvas, 0.75);
+      attempts++;
+    }
+
+    // Último recurso: devolve o menor resultado obtido, mesmo acima do
+    // orçamento (o envio pode falhar, mas ao menos tentamos).
+    console.warn('Não foi possível comprimir o PDF do certificado dentro do orçamento de tamanho.');
+    return buildPdf(workingCanvas, qualities[qualities.length - 1]);
+  }
+
+  function gerarPdfCertificadoBase64() {
+    var el = document.querySelector('.certificate-preview');
+    return document.fonts.ready.then(function () {
+      return html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#000000',
+        onclone: function (clonedDoc) {
+          // A stage inteira usa "transform: scale(...)" para caber na
+          // janela do totem; zeramos isso só no clone renderizado pelo
+          // html2canvas para capturar o certificado no tamanho real.
+          var clonedStage = clonedDoc.getElementById('stage');
+          if (clonedStage) clonedStage.style.transform = 'none';
+        }
+      });
+    }).then(function (canvas) {
+      return canvasToPdfBase64WithinBudget(canvas);
+    });
+  }
+
+  /* ===================================================================
+     Result screen actions — envio do certificado por e-mail
+     (POST para o nosso próprio backend — ver server/README.md)
+     =================================================================== */
+  var emailInput = document.getElementById('email-input');
+  var sendBtn = document.getElementById('send-button');
+  var sendErrorEl = document.getElementById('send-error');
+
+  var apiConfig = window.TOTEM_API_CONFIG || null;
+  var apiReady = !!(apiConfig && apiConfig.baseUrl &&
+    apiConfig.baseUrl.indexOf('COLE_AQUI') !== 0);
+
+  if (!apiReady) {
+    console.warn('Servidor de envio não configurado — preencha server-config.js (veja server/README.md). O botão ENVIAR vai gerar o PDF mas não vai enviar.');
+  }
+
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function showSendError(message) {
+    sendErrorEl.textContent = message;
+    sendErrorEl.hidden = false;
+  }
+
+  function clearSendError() {
+    sendErrorEl.hidden = true;
+    sendErrorEl.textContent = '';
+  }
+
+  function setSendBtnState(label, disabled) {
+    sendBtn.textContent = label;
+    sendBtn.disabled = disabled;
+  }
+
+  function postCertificado(path, payload) {
+    var url = apiConfig.baseUrl.replace(/\/+$/, '') + path;
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Totem-Key': apiConfig.apiKey || ''
+      },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      if (res.ok) return;
+      return res.json().catch(function () { return {}; }).then(function (body) {
+        throw new Error(body.error || ('Servidor respondeu ' + res.status));
+      });
+    });
+  }
+
+  function enviarCertificadoPorEmail(email, pdfBase64) {
+    return postCertificado('/api/enviar-certificado', {
+      email: email,
+      nome: currentRecord.nome,
+      curso: currentRecord.curso,
+      dataConclusao: currentRecord.dataConclusao,
+      pdfBase64: pdfBase64
+    });
+  }
+
+  sendBtn.addEventListener('click', function () {
+    clearSendError();
+
+    var destino = emailInput.value.trim();
+    if (!isValidEmail(destino)) {
+      showSendError('Digite um e-mail válido.');
+      emailInput.focus();
+      return;
+    }
+    if (!currentRecord) {
+      showSendError('Nenhum certificado carregado. Faça a busca novamente.');
+      return;
+    }
+
+    var originalLabel = sendBtn.textContent;
+    setSendBtnState('Gerando PDF…', true);
+
+    gerarPdfCertificadoBase64()
+      .then(function (pdfBase64) {
+        if (!apiReady) {
+          throw { serverNotConfigured: true };
+        }
+        setSendBtnState('Enviando…', true);
+        return enviarCertificadoPorEmail(destino, pdfBase64);
+      })
+      .then(function () {
+        setSendBtnState('Enviado!', true);
+        setTimeout(function () {
+          setSendBtnState(originalLabel, false);
+        }, 2500);
+      })
+      .catch(function (err) {
+        if (err && err.serverNotConfigured) {
+          showSendError('Envio ainda não configurado (veja server/README.md).');
+        } else {
+          console.error('Falha ao enviar certificado:', err);
+          showSendError((err && err.message) || 'Não foi possível enviar. Tente novamente.');
+        }
+        setSendBtnState(originalLabel, false);
+      });
+  });
+
+  document.getElementById('new-search-button').addEventListener('click', function () {
+    emailInput.value = '';
+    clearSendError();
+    currentRecord = null;
+    resetSearch();
+    showScreen('search');
+  });
+
+  renderAll();
+})();

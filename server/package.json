@@ -1,0 +1,19 @@
+{
+  "name": "toten-certificado-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend mínimo que recebe o PDF do certificado (gerado no totem) e envia por e-mail via Microsoft Graph.",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0"
+  }
+}
