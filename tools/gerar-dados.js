@@ -17,20 +17,24 @@ const COL_ANO = 'Ano de Nascimento';
 const COL_CHAVE = 'Chave de Validação';
 const COL_NOME = 'Nome Completo';
 const COL_CURSO = 'Treinamento/Curso';
-const COL_DATA = 'Data de Conclusão';
+const COL_DIA = 'Dia';
+const COL_MES = 'Mês';
+const COL_ANO_CONCLUSAO = 'Ano';
+const COL_CARGA = 'Carga';
 
 function onlyDigits(value) {
   return String(value == null ? '' : value).replace(/\D/g, '');
 }
 
-function formatData(value) {
-  if (value instanceof Date) {
-    const dd = String(value.getDate()).padStart(2, '0');
-    const mm = String(value.getMonth() + 1).padStart(2, '0');
-    const yyyy = value.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }
-  return String(value == null ? '' : value).trim();
+// Monta a data de conclusão por extenso a partir das colunas Dia/Mês/Ano
+// (ex: "13 de agosto de 2026"). Se dia, mês ou ano estiverem vazios,
+// devolve string vazia.
+function formatData(dia, mes, ano) {
+  const diaStr = String(dia == null ? '' : dia).trim();
+  const mesStr = String(mes == null ? '' : mes).trim();
+  const anoStr = String(ano == null ? '' : ano).trim();
+  if (!diaStr || !mesStr || !anoStr) return '';
+  return `${diaStr} de ${mesStr.toLowerCase()} de ${anoStr}`;
 }
 
 const wb = XLSX.readFile(XLSX_PATH, { cellDates: true });
@@ -64,7 +68,8 @@ rows.forEach((row, i) => {
     anoNascimento: ano,
     nome,
     curso: String(row[COL_CURSO] || '').trim(),
-    dataConclusao: formatData(row[COL_DATA])
+    dataConclusao: formatData(row[COL_DIA], row[COL_MES], row[COL_ANO_CONCLUSAO]),
+    cargaHoraria: String(row[COL_CARGA] || '').trim()
   });
 });
 

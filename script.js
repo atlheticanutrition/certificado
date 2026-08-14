@@ -160,8 +160,9 @@
   /* Preenche nome/curso/data por cima da arte do certificado (Slide2). */
   function preencherCertificado(record) {
     document.getElementById('cert-nome').textContent = record.nome;
+    var cargaTexto = record.cargaHoraria ? ', com carga horária de <b>' + escapeHtml(record.cargaHoraria) + '</b>,' : '';
     document.getElementById('cert-paragrafo').innerHTML =
-      'Por participar e concluir com aproveitamento o <b>' + escapeHtml(record.curso) + '</b> ' +
+      'Por participar e concluir com aproveitamento o <b>' + escapeHtml(record.curso) + '</b>' + cargaTexto + ' ' +
       'concedido pela Empresa ADS LABORATÓRIO NUTRICIONAL LTDA. Realizado em ' + escapeHtml(record.dataConclusao) + '.' +
       '<span class="cert-local-data">Matão, ' + escapeHtml(record.dataConclusao) + '.</span>';
   }
@@ -324,6 +325,7 @@
       nome: currentRecord.nome,
       curso: currentRecord.curso,
       dataConclusao: currentRecord.dataConclusao,
+      cargaHoraria: currentRecord.cargaHoraria,
       pdfBase64: pdfBase64
     });
   }

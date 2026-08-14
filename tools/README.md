@@ -13,7 +13,13 @@ Excel em tempo real — é preciso regenerá-lo sempre que a planilha mudar.
 | Chave de Validação | 08052000 (opcional — só usada para conferência) |
 | Nome Completo | Auderico Audérico da Silva |
 | Treinamento/Curso | BPF |
-| Data de Conclusão | 13/08/2026 |
+| Dia | 13 |
+| Mês | Agosto |
+| Ano | 2026 |
+| Carga | 1h30 |
+
+> A data de conclusão exibida no certificado/e-mail é montada juntando
+> **Dia + Mês + Ano** (ex: "13 de agosto de 2026").
 
 > Dica: formate as colunas **CPF** e **Ano de Nascimento** como *Texto* no Excel
 > para evitar perder zeros à esquerda.

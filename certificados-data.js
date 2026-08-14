@@ -1,6 +1,6 @@
 // Gerado automaticamente a partir de "assets/Modelo Certificado.xlsx" — NÃO editar à mão.
 // Para atualizar: edite a planilha e rode "node tools/gerar-dados.js" (veja tools/README.md).
-// Gerado em: 2026-08-14T17:39:47.167Z
+// Gerado em: 2026-08-14T18:08:38.311Z
 window.CERTIFICADOS_DATA = [
   {
     "cpf": "47167140805",
@@ -8,7 +8,8 @@ window.CERTIFICADOS_DATA = [
     "anoNascimento": "2000",
     "nome": "Mariana Carolina dos Santos",
     "curso": "BPF",
-    "dataConclusao": "13/08/2026"
+    "dataConclusao": "13 de agosto de 2026",
+    "cargaHoraria": "1h30"
   },
   {
     "cpf": "39096508807",
@@ -16,7 +17,8 @@ window.CERTIFICADOS_DATA = [
     "anoNascimento": "1990",
     "nome": "Jair Alberto Gonçalves",
     "curso": "Marketing",
-    "dataConclusao": "14/08/2026"
+    "dataConclusao": "14 de agosto de 2026",
+    "cargaHoraria": "1h30"
   },
   {
     "cpf": "48953912806",
@@ -24,7 +26,8 @@ window.CERTIFICADOS_DATA = [
     "anoNascimento": "2000",
     "nome": "Guilherme Henrique Domingues José",
     "curso": "T.I",
-    "dataConclusao": "14/08/2026"
+    "dataConclusao": "14 de agosto de 2026",
+    "cargaHoraria": "1h30"
   },
   {
     "cpf": "39096508807",
@@ -32,7 +35,8 @@ window.CERTIFICADOS_DATA = [
     "anoNascimento": "1990",
     "nome": "Jair Alberto Gonçalves",
     "curso": "BPF",
-    "dataConclusao": "14/08/2026"
+    "dataConclusao": "13 de agosto de 2026",
+    "cargaHoraria": "1h30"
   },
   {
     "cpf": "37257970807",
@@ -40,7 +44,8 @@ window.CERTIFICADOS_DATA = [
     "anoNascimento": "2000",
     "nome": "Giovanna Amoroso",
     "curso": "BPF",
-    "dataConclusao": "14/08/2026"
+    "dataConclusao": "12 de agosto de 2026",
+    "cargaHoraria": "1h30"
   },
   {
     "cpf": "53316429859",
@@ -48,6 +53,16 @@ window.CERTIFICADOS_DATA = [
     "anoNascimento": "2003",
     "nome": "Heloisa MKT",
     "curso": "BPF",
-    "dataConclusao": "15/07/2025"
+    "dataConclusao": "14 de agosto de 2026",
+    "cargaHoraria": "10h30"
+  },
+  {
+    "cpf": "12345678900",
+    "cpf4": "8900",
+    "anoNascimento": "2000",
+    "nome": "Eduardo Mondini",
+    "curso": "BPF",
+    "dataConclusao": "14 de agosto de 2026",
+    "cargaHoraria": "1h30"
   }
 ];

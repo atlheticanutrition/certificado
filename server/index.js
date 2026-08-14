@@ -3,7 +3,7 @@
    navegador, em base64) e envia por e-mail via Microsoft Graph.
 
    Rota:
-     POST /api/enviar-certificado  { email, nome, curso, dataConclusao, pdfBase64 }
+     POST /api/enviar-certificado  { email, nome, curso, dataConclusao, cargaHoraria, pdfBase64 }
    Header obrigatório (exceto /api/health): X-Totem-Key: <mesma chave do .env>
 
    Configuração: copie .env.example para .env e preencha as
@@ -89,6 +89,7 @@ app.post('/api/enviar-certificado', sendLimiter, requireApiKey, async function (
     var nome = body.nome || '';
     var curso = body.curso || '';
     var dataConclusao = body.dataConclusao || '';
+    var cargaHoraria = body.cargaHoraria || '';
     var pdfBase64 = body.pdfBase64;
 
     if (!isValidEmail(email)) {
@@ -105,7 +106,8 @@ app.post('/api/enviar-certificado', sendLimiter, requireApiKey, async function (
       to: email,
       subject: 'Seu Certificado - ADS Laboratório',
       text: 'Olá ' + nome + ',\n\n' +
-        'Segue em anexo o certificado curso/treinamento "' + curso + '" ' +
+        'Segue em anexo o certificado curso/treinamento "' + curso + '"' +
+        (cargaHoraria ? ', com carga horária de ' + cargaHoraria + ',' : '') + ' ' +
         'concluído em ' + dataPorExtenso(dataConclusao) + '.\n\n' +
         'Parabéns pelo seu empenho e dedicação\n\n' +
         'Abraços,\nSteve Ball',
