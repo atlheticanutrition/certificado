@@ -359,6 +359,7 @@
         setSendBtnState('Enviado!', true);
         setTimeout(function () {
           setSendBtnState(originalLabel, false);
+          voltarParaBusca();
         }, 2500);
       })
       .catch(function (err) {
@@ -372,13 +373,17 @@
       });
   });
 
-  document.getElementById('new-search-button').addEventListener('click', function () {
+  // Volta para a tela inicial de busca (usada após um envio bem-sucedido e
+  // também pelo botão "Nova Consulta").
+  function voltarParaBusca() {
     emailInput.value = '';
     clearSendError();
     currentRecord = null;
     resetSearch();
     showScreen('search');
-  });
+  }
+
+  document.getElementById('new-search-button').addEventListener('click', voltarParaBusca);
 
   renderAll();
 })();
