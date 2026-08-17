@@ -62,7 +62,11 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-black);
+  /* Leve gradiente cobrindo 100% da área (em vez de preto chapado) —
+     garante que não sobre nenhum canto "morto" mesmo em janelas com
+     proporção incomum (bem estreitas/altas, ultrawide etc.), onde os
+     pontos de luz do ::before abaixo podem não alcançar até a borda. */
+  background: linear-gradient(160deg, #071409 0%, #030503 50%, #050810 100%);
   position: relative;
   overflow: hidden;
 }
@@ -80,10 +84,10 @@ html, body {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(55vmax circle at 12% 15%, var(--accent-green-glow), transparent 65%),
-    radial-gradient(50vmax circle at 88% 85%, rgba(255, 255, 255, 0.05), transparent 65%);
+    radial-gradient(75vmax circle at 0% 0%, var(--accent-green-glow), transparent 70%),
+    radial-gradient(70vmax circle at 100% 100%, rgba(255, 255, 255, 0.06), transparent 70%);
   filter: blur(90px);
-  opacity: 0.5;
+  opacity: 0.6;
   animation: ambientFloat 24s ease-in-out infinite alternate;
 }
 
