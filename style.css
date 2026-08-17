@@ -809,6 +809,21 @@ html, body {
   transform: scale(0.92);
 }
 
+.kb-row--suggestions .kb-key {
+  flex: 1 1 0;
+  max-width: 220px;
+}
+.kb-key--suggestion {
+  background: var(--bg-key-back);
+  color: var(--text-secondary);
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+.kb-key--suggestion:active {
+  background: #1e1e1e;
+}
+
 .kb-row--bottom {
   margin-top: 6px;
 }
@@ -1158,6 +1173,12 @@ html, body {
   .kb-key--ok {
     flex: 0 0 90px;
     max-width: 90px;
+  }
+  .kb-row--suggestions .kb-key {
+    max-width: 130px;
+  }
+  .kb-key--suggestion {
+    font-size: clamp(10px, 3.2vw, 13px);
   }
 }
 
