@@ -1,0 +1,32 @@
+# Blueprint do Render para o backend do totem (pasta server/).
+#
+# Como usar: no painel do Render (render.com) → "New +" → "Blueprint" →
+# conecte o repositório atlheticanutrition/certificado → o Render lê
+# este arquivo e já cria o serviço configurado. Você só precisa
+# preencher os valores secretos marcados com "sync: false" abaixo
+# (mesmos valores que estão no server/.env local).
+#
+# Depois do deploy, o Render gera uma URL pública tipo
+# https://certificado-api.onrender.com — essa URL vai em
+# server-config.js (baseUrl) no projeto do totem.
+
+services:
+  - type: web
+    name: certificado-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: API_KEY
+        sync: false
+      - key: AZURE_TENANT_ID
+        sync: false
+      - key: AZURE_CLIENT_ID
+        sync: false
+      - key: AZURE_CLIENT_SECRET
+        sync: false
+      - key: GRAPH_SENDER_EMAIL
+        sync: false
