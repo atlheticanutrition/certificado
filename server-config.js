@@ -8,6 +8,6 @@
    gera o PDF normalmente mas mostra um aviso em vez de enviar.
    =================================================================== */
 window.TOTEM_API_CONFIG = {
-  baseUrl: 'http://localhost:3001', // teste local — trocar pela URL do VPS antes de publicar
+  baseUrl: 'https://certificado-api-pkrr.onrender.com', // backend em produção (Render)
   apiKey: 'test-key-12345'
 };
