@@ -819,6 +819,7 @@ html, body {
   font-size: 18px;
   font-weight: 600;
   text-transform: lowercase;
+  padding: 0 6px;
 }
 .kb-key--suggestion:active {
   background: #1e1e1e;
@@ -1178,7 +1179,8 @@ html, body {
     max-width: 130px;
   }
   .kb-key--suggestion {
-    font-size: clamp(10px, 3.2vw, 13px);
+    font-size: clamp(9px, 2.9vw, 12px);
+    padding: 0 3px;
   }
 }
 
