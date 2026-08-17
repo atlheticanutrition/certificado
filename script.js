@@ -4,14 +4,62 @@
   /* ===================================================================
      Stage scaling — keeps the 1920x1080 kiosk layout pixel-perfect on
      any actual monitor resolution/window size.
+
+     Abaixo de MOBILE_BREAKPOINT a página troca para o layout fluido em
+     coluna (ver media query no fim do style.css) em vez de miniaturizar
+     o canvas do totem — miniaturizar um layout 16:9 numa tela de celular
+     em pé geraria barras pretas enormes em vez de se adaptar de verdade.
      =================================================================== */
   var stage = document.getElementById('stage');
+  var MOBILE_BREAKPOINT = 900;
+  var mobileQuery = window.matchMedia('(max-width: ' + MOBILE_BREAKPOINT + 'px)');
+
   function scaleStage() {
+    if (mobileQuery.matches) {
+      stage.style.transform = 'none';
+      return;
+    }
     var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
     stage.style.transform = 'scale(' + scale + ')';
   }
   scaleStage();
   window.addEventListener('resize', scaleStage);
+  // Safari antigo não tem addEventListener em MediaQueryList.
+  if (mobileQuery.addEventListener) {
+    mobileQuery.addEventListener('change', scaleStage);
+  } else if (mobileQuery.addListener) {
+    mobileQuery.addListener(scaleStage);
+  }
+
+  /* ===================================================================
+     Escala da pré-visualização do certificado (.certificate-preview
+     mantém tamanho nativo 937.6x662.67 sempre — só encolhemos
+     visualmente via CSS var --cert-scale para caber no layout fluido do
+     mobile). No modo kiosk/desktop o frame já nasce com 937.6px de
+     largura fixa, então o scale calculado dá 1 e não muda nada.
+     =================================================================== */
+  var CERT_NATIVE_WIDTH = 937.6;
+  var certFrame = document.querySelector('.certificate-frame');
+  var certPreview = document.querySelector('.certificate-preview');
+
+  function applyCertScale(width) {
+    if (!width) return;
+    var scale = width / CERT_NATIVE_WIDTH;
+    certPreview.style.setProperty('--cert-scale', scale);
+  }
+
+  if (certFrame && certPreview) {
+    if (window.ResizeObserver) {
+      new ResizeObserver(function (entries) {
+        applyCertScale(entries[0].contentRect.width);
+      }).observe(certFrame);
+    } else {
+      // Fallback sem ResizeObserver: recalcula nos mesmos gatilhos do stage.
+      var recalcCertScale = function () { applyCertScale(certFrame.getBoundingClientRect().width); };
+      recalcCertScale();
+      window.addEventListener('resize', recalcCertScale);
+    }
+  }
 
   // Kiosk hardening: no context menu, no accidental text selection/drag.
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
@@ -260,6 +308,20 @@
           // html2canvas para capturar o certificado no tamanho real.
           var clonedStage = clonedDoc.getElementById('stage');
           if (clonedStage) clonedStage.style.transform = 'none';
+
+          // Em telas de celular o frame do certificado fica fluido/menor
+          // e a pré-visualização é encolhida via --cert-scale — no clone
+          // usado só para a captura, forçamos ambos de volta ao tamanho
+          // nativo (937.6x662.67) para o PDF sair sempre no mesmo
+          // tamanho/qualidade, independente do dispositivo.
+          var clonedFrame = clonedDoc.querySelector('.certificate-frame');
+          if (clonedFrame) {
+            clonedFrame.style.width = '937.6px';
+            clonedFrame.style.height = '662.67px';
+            clonedFrame.style.overflow = 'visible';
+          }
+          var clonedPreview = clonedDoc.querySelector('.certificate-preview');
+          if (clonedPreview) clonedPreview.style.transform = 'none';
         }
       });
     }).then(function (canvas) {
