@@ -721,6 +721,118 @@ html, body {
   transform: scale(0.98);
 }
 
+/* ---------------------------------------------------------------------
+   Teclado virtual do e-mail (totem em touchscreen, sem teclado físico)
+   --------------------------------------------------------------------- */
+.keyboard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.keyboard-overlay[hidden] {
+  display: none;
+}
+
+.keyboard-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.keyboard-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1140px;
+  background: var(--bg-sidebar);
+  border-top: 1.5px solid var(--border-default);
+  border-radius: 28px 28px 0 0;
+  padding: 32px 40px 40px;
+  box-shadow: var(--shadow-soft);
+  animation: keyboardSlideUp 0.28s var(--ease-standard);
+}
+@keyframes keyboardSlideUp {
+  from { transform: translateY(48px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.keyboard-label {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.keyboard-preview {
+  margin: 0 0 22px;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--text-white);
+  text-align: center;
+  min-height: 34px;
+  word-break: break-all;
+}
+
+.kb-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.kb-row--indent {
+  padding: 0 28px;
+}
+
+.kb-key {
+  flex: 1 1 0;
+  max-width: 92px;
+  height: 62px;
+  border-radius: 12px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-default);
+  color: var(--text-white);
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.09s var(--ease-standard), background-color 0.15s var(--ease-standard);
+}
+.kb-key:active {
+  background: #262628;
+  transform: scale(0.92);
+}
+
+.kb-row--bottom {
+  margin-top: 6px;
+}
+.kb-key--back {
+  flex: 0 0 140px;
+  max-width: 140px;
+  background: var(--bg-key-back);
+  color: var(--text-secondary);
+  font-size: 24px;
+}
+.kb-key--space {
+  flex: 1 1 auto;
+  max-width: none;
+  font-size: 17px;
+}
+.kb-key--ok {
+  flex: 0 0 160px;
+  max-width: 160px;
+  background: linear-gradient(160deg, var(--accent-green-soft), var(--accent-green));
+  border-color: var(--accent-green);
+  color: #072513;
+}
+.kb-key--ok:active {
+  background: var(--accent-green);
+  transform: scale(0.95);
+}
+
 /* =======================================================================
    MODO MOBILE — telas de celular (qualquer resolução, portrait/landscape)
 
@@ -771,7 +883,12 @@ html, body {
     flex-direction: column;
     align-items: stretch;
     opacity: 1;
-    transform: none;
+    /* !important necessário: .screen[data-active="true"] (fora da media
+       query) tem especificidade maior e aplicaria transform:scale(1) —
+       QUALQUER transform diferente de "none" cria um novo containing
+       block, o que quebraria o position:fixed do teclado virtual do
+       e-mail (ele passaria a se ancorar no .screen em vez da tela real). */
+    transform: none !important;
     transition: none;
   }
   .screen[data-active="true"] {
@@ -1005,6 +1122,39 @@ html, body {
     height: 48px;
     font-size: 14px;
     border-radius: 10px;
+  }
+
+  /* Teclado virtual do e-mail — mais compacto pra caber em tela de celular. */
+  .keyboard-panel {
+    max-width: 100%;
+    padding: 20px 10px 24px;
+    border-radius: 20px 20px 0 0;
+  }
+  .keyboard-preview {
+    font-size: clamp(18px, 5.5vw, 24px);
+    margin-bottom: 16px;
+  }
+  .kb-row {
+    gap: 6px;
+    margin-bottom: 7px;
+  }
+  .kb-row--indent {
+    padding: 0 14px;
+  }
+  .kb-key {
+    max-width: 60px;
+    height: 46px;
+    border-radius: 9px;
+    font-size: clamp(14px, 4.5vw, 18px);
+  }
+  .kb-key--back {
+    flex: 0 0 76px;
+    max-width: 76px;
+    font-size: 18px;
+  }
+  .kb-key--ok {
+    flex: 0 0 90px;
+    max-width: 90px;
   }
 }
 

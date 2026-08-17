@@ -337,6 +337,55 @@
   var sendBtn = document.getElementById('send-button');
   var sendErrorEl = document.getElementById('send-error');
 
+  /* ===================================================================
+     Teclado virtual do e-mail — o totem roda em touchscreen sem teclado
+     físico, então em vez de depender do teclado do SO (que nem sempre
+     abre sozinho num navegador em modo kiosk), desenhamos o nosso
+     próprio, no mesmo espírito do teclado numérico da tela de busca.
+     =================================================================== */
+  var keyboardOverlay = document.getElementById('email-keyboard');
+  var keyboardBackdrop = document.getElementById('keyboard-backdrop');
+  var keyboardPreview = document.getElementById('keyboard-preview');
+  var keyboardPanel = keyboardOverlay ? keyboardOverlay.querySelector('.keyboard-panel') : null;
+
+  function updateKeyboardPreview() {
+    keyboardPreview.textContent = emailInput.value || emailInput.placeholder;
+  }
+
+  function openKeyboard() {
+    updateKeyboardPreview();
+    keyboardOverlay.hidden = false;
+  }
+
+  function closeKeyboard() {
+    keyboardOverlay.hidden = true;
+  }
+
+  if (keyboardOverlay && keyboardPanel) {
+    emailInput.addEventListener('focus', openKeyboard);
+    keyboardBackdrop.addEventListener('click', closeKeyboard);
+
+    keyboardPanel.addEventListener('click', function (e) {
+      var key = e.target.closest('.kb-key');
+      if (!key) return;
+      clearSendError();
+
+      var action = key.getAttribute('data-action');
+      if (action === 'backspace') {
+        emailInput.value = emailInput.value.slice(0, -1);
+      } else if (action === 'space') {
+        emailInput.value += ' ';
+      } else if (action === 'done') {
+        closeKeyboard();
+        return;
+      } else {
+        var char = key.getAttribute('data-char');
+        if (char) emailInput.value += char;
+      }
+      updateKeyboardPreview();
+    });
+  }
+
   var apiConfig = window.TOTEM_API_CONFIG || null;
   var apiReady = !!(apiConfig && apiConfig.baseUrl &&
     apiConfig.baseUrl.indexOf('COLE_AQUI') !== 0);
@@ -442,6 +491,7 @@
   function voltarParaBusca() {
     emailInput.value = '';
     clearSendError();
+    if (keyboardOverlay) closeKeyboard();
     currentRecord = null;
     resetSearch();
     showScreen('search');

@@ -128,11 +128,78 @@
         </div>
 
         <p class="field-label field-label--email" id="channel-field-label">E-MAIL</p>
-        <input class="email-input" id="email-input" type="email" inputmode="email" placeholder="seu@email.com" autocomplete="off" />
+        <input class="email-input" id="email-input" type="email" inputmode="none" placeholder="seu@email.com" autocomplete="off" />
         <p class="error-message" id="send-error" hidden></p>
 
         <button class="submit-button submit-button--send" type="button" id="send-button">ENVIAR</button>
         <button class="secondary-button" type="button" id="new-search-button">Nova Consulta</button>
+      </div>
+
+      <!-- Teclado virtual do e-mail — o totem roda em touchscreen sem
+           teclado físico, então em vez de depender do teclado do SO
+           (que nem sempre abre sozinho em navegador em modo kiosk),
+           desenhamos o nosso próprio, igual ao teclado numérico da
+           tela de busca. Abre ao tocar no campo E-MAIL. -->
+      <div class="keyboard-overlay" id="email-keyboard" hidden>
+        <div class="keyboard-backdrop" id="keyboard-backdrop"></div>
+        <div class="keyboard-panel">
+          <p class="keyboard-label">E-MAIL</p>
+          <p class="keyboard-preview" id="keyboard-preview">seu@email.com</p>
+
+          <div class="kb-row">
+            <button class="kb-key" type="button" data-char="1">1</button>
+            <button class="kb-key" type="button" data-char="2">2</button>
+            <button class="kb-key" type="button" data-char="3">3</button>
+            <button class="kb-key" type="button" data-char="4">4</button>
+            <button class="kb-key" type="button" data-char="5">5</button>
+            <button class="kb-key" type="button" data-char="6">6</button>
+            <button class="kb-key" type="button" data-char="7">7</button>
+            <button class="kb-key" type="button" data-char="8">8</button>
+            <button class="kb-key" type="button" data-char="9">9</button>
+            <button class="kb-key" type="button" data-char="0">0</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" type="button" data-char="q">q</button>
+            <button class="kb-key" type="button" data-char="w">w</button>
+            <button class="kb-key" type="button" data-char="e">e</button>
+            <button class="kb-key" type="button" data-char="r">r</button>
+            <button class="kb-key" type="button" data-char="t">t</button>
+            <button class="kb-key" type="button" data-char="y">y</button>
+            <button class="kb-key" type="button" data-char="u">u</button>
+            <button class="kb-key" type="button" data-char="i">i</button>
+            <button class="kb-key" type="button" data-char="o">o</button>
+            <button class="kb-key" type="button" data-char="p">p</button>
+          </div>
+          <div class="kb-row kb-row--indent">
+            <button class="kb-key" type="button" data-char="a">a</button>
+            <button class="kb-key" type="button" data-char="s">s</button>
+            <button class="kb-key" type="button" data-char="d">d</button>
+            <button class="kb-key" type="button" data-char="f">f</button>
+            <button class="kb-key" type="button" data-char="g">g</button>
+            <button class="kb-key" type="button" data-char="h">h</button>
+            <button class="kb-key" type="button" data-char="j">j</button>
+            <button class="kb-key" type="button" data-char="k">k</button>
+            <button class="kb-key" type="button" data-char="l">l</button>
+          </div>
+          <div class="kb-row">
+            <button class="kb-key" type="button" data-char="z">z</button>
+            <button class="kb-key" type="button" data-char="x">x</button>
+            <button class="kb-key" type="button" data-char="c">c</button>
+            <button class="kb-key" type="button" data-char="v">v</button>
+            <button class="kb-key" type="button" data-char="b">b</button>
+            <button class="kb-key" type="button" data-char="n">n</button>
+            <button class="kb-key" type="button" data-char="m">m</button>
+            <button class="kb-key" type="button" data-char="@">@</button>
+            <button class="kb-key" type="button" data-char=".">.</button>
+            <button class="kb-key" type="button" data-char="-">-</button>
+            <button class="kb-key" type="button" data-char="_">_</button>
+          </div>
+          <div class="kb-row kb-row--bottom">
+            <button class="kb-key kb-key--back" type="button" data-action="backspace">⌫</button>
+            <button class="kb-key kb-key--space" type="button" data-action="space">Espaço</button>
+            <button class="kb-key kb-key--ok" type="button" data-action="done">OK</button>
+          </div>
+        </div>
       </div>
     </section>
 
