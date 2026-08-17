@@ -221,8 +221,8 @@
     var key = btn.getAttribute('data-key');
     if (key === 'back') {
       pressBack();
-    } else if (key === 'confirm') {
-      handleSubmit();
+    } else if (key === 'clear') {
+      resetSearch();
     } else {
       pressDigit(key);
     }

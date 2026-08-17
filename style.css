@@ -63,6 +63,28 @@ html, body {
   align-items: center;
   justify-content: center;
   background: var(--bg-black);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Em monitores que não são 16:9 (ultrawide, 4:3, notebooks 16:10...) o
+   #stage — escalado para caber inteiro, sem cortar nada — sobra com
+   folga nas laterais ou em cima/embaixo. Em vez de deixar essa folga
+   preta "morta" (parecendo tela quebrada), preenchemos o monitor
+   inteiro com o mesmo glow ambiente animado usado dentro do app, então
+   a barra vira parte do design em vez de espaço vazio. */
+#stage-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(55vmax circle at 12% 15%, var(--accent-green-glow), transparent 65%),
+    radial-gradient(50vmax circle at 88% 85%, rgba(255, 255, 255, 0.05), transparent 65%);
+  filter: blur(90px);
+  opacity: 0.5;
+  animation: ambientFloat 24s ease-in-out infinite alternate;
 }
 
 #stage {
@@ -70,6 +92,7 @@ html, body {
   height: 1080px;
   flex-shrink: 0;
   position: relative;
+  z-index: 1;
   background: var(--bg-black);
   overflow: hidden;
   transform-origin: center center;
@@ -338,13 +361,15 @@ html, body {
 .key--back:active {
   background: #1e1e1e;
 }
-.key--confirm {
+.key--clear {
   background: linear-gradient(160deg, var(--accent-green-soft), var(--accent-green));
   border-color: var(--accent-green);
   color: #072513;
+  font-size: 22px;
+  letter-spacing: 0.02em;
   box-shadow: 0 6px 20px var(--accent-green-glow);
 }
-.key--confirm:active {
+.key--clear:active {
   background: var(--accent-green);
   transform: scale(0.93);
   box-shadow: 0 3px 10px var(--accent-green-glow);
@@ -715,6 +740,11 @@ html, body {
     width: 100%;
     min-height: 100dvh;
   }
+  /* Sem letterboxing no mobile (layout já é fluido) — dispensa o glow
+     de preenchimento do #stage-wrapper, o .screen já tem o seu. */
+  #stage-wrapper::before {
+    display: none;
+  }
 
   #stage {
     width: 100%;
@@ -919,6 +949,10 @@ html, body {
     aspect-ratio: 2.6 / 1;
     border-radius: 10px;
     font-size: clamp(18px, 5.5vw, 24px);
+  }
+  .key--clear {
+    font-size: clamp(12px, 4vw, 15px);
+    letter-spacing: 0.01em;
   }
 
   .submit-button {
