@@ -105,10 +105,10 @@ app.post('/api/enviar-certificado', sendLimiter, requireApiKey, async function (
     await graphMailer.sendMail({
       to: email,
       subject: 'Seu Certificado - ADS Laboratório',
-      text: 'Olá ' + nome + '\n\n' +
-        'Segue em anexo o certificado curso/treinamento "' + curso + '" concluído em ' +
+      text: 'Olá ' + nome + ',\n\n' +
+        'Segue em anexo o certificado curso/treinamento ' + curso + ' concluído em ' +
         dataPorExtenso(dataConclusao) + '.\n\n' +
-        'Parabéns pelo seu empenho e dedicação\n\n' +
+        'Parabéns pelo seu empenho e dedicação.\n\n' +
         'Abraços Steve Ball',
       attachments: [
         {
