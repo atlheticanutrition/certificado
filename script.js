@@ -263,7 +263,7 @@
     var cargaTexto = record.cargaHoraria ? ', com carga horária de <b>' + escapeHtml(record.cargaHoraria) + '</b>,' : '';
     document.getElementById('cert-paragrafo').innerHTML =
       'Por participar e concluir com aproveitamento o <b>' + escapeHtml(record.curso) + '</b>' + cargaTexto + ' ' +
-      'concedido pela Empresa ADS LABORATÓRIO NUTRICIONAL LTDA. Realizado em ' + escapeHtml(record.dataConclusao) + '.' +
+      'concedido pela Empresa ADS LABORATÓRIO NUTRICIONAL LTDA, realizado em ' + escapeHtml(record.dataConclusao) + '.' +
       '<span class="cert-local-data">Matão, ' + escapeHtml(record.dataConclusao) + '.</span>';
   }
 
