@@ -109,7 +109,7 @@ app.post('/api/enviar-certificado', sendLimiter, requireApiKey, async function (
         'Segue em anexo o certificado curso/treinamento ' + curso + ' concluído em ' +
         dataPorExtenso(dataConclusao) + '.\n\n' +
         'Parabéns pelo seu empenho e dedicação.\n\n' +
-        'Abraços Steve Ball',
+        'Abraços,\nSteve Ball',
       attachments: [
         {
           filename: 'certificado.pdf',
