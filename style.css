@@ -107,11 +107,14 @@ html, body {
    --------------------------------------------------------------------- */
 .screen {
   position: absolute;
+  /* Sem width/height fixos de propósito: inset:0 faz a tela preencher
+     exatamente o #stage, seja ele 1920px (padrão) ou uma largura maior
+     calculada em JS (script.js, scaleStage) em monitores mais largos
+     que 16:9 -- assim o right-panel (flex:1) absorve o espaço extra e
+     preenche a tela toda, sem sobrar barra nenhuma. */
   inset: 0;
   display: flex;
   align-items: stretch;
-  width: 1920px;
-  height: 1080px;
   opacity: 0;
   pointer-events: none;
   transform: scale(0.985);

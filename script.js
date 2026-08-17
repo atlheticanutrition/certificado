@@ -14,13 +14,38 @@
   var MOBILE_BREAKPOINT = 900;
   var mobileQuery = window.matchMedia('(max-width: ' + MOBILE_BREAKPOINT + 'px)');
 
+  var DESIGN_RATIO = 1920 / 1080;
+
   function scaleStage() {
     if (mobileQuery.matches) {
+      stage.style.width = '';
+      stage.style.height = '';
       stage.style.transform = 'none';
       return;
     }
-    var scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-    stage.style.transform = 'scale(' + scale + ')';
+
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    if (vw / vh > DESIGN_RATIO) {
+      // Monitor mais largo que 16:9 (ex: ultrawide): escala pela altura
+      // (sem distorcer nada) e deixa a largura do #stage fluida — a
+      // .screen preenche esse espaço extra via inset:0, e dentro dela o
+      // right-panel (flex:1) absorve a sobra, preenchendo a tela toda
+      // sem deixar barra nenhuma nas laterais.
+      var scaleH = vh / 1080;
+      stage.style.width = (vw / scaleH) + 'px';
+      stage.style.height = '1080px';
+      stage.style.transform = 'scale(' + scaleH + ')';
+    } else {
+      // 16:9 ou mais estreito: mantém o comportamento original —
+      // encaixa o canvas inteiro, sem cortar nada (a barra que sobra
+      // fica só em cima/embaixo, já coberta pelo fundo ambiente).
+      stage.style.width = '1920px';
+      stage.style.height = '1080px';
+      var scaleFit = Math.min(vw / 1920, vh / 1080);
+      stage.style.transform = 'scale(' + scaleFit + ')';
+    }
   }
   scaleStage();
   window.addEventListener('resize', scaleStage);
@@ -90,9 +115,36 @@
     result: document.getElementById('screen-result')
   };
 
+  // Rede de segurança para o crossfade entre telas: a troca é feita via
+  // opacity/transform com transition (CSS) para dar aquele fade suave,
+  // mas em alguns cenários de renderização a transição pode não
+  // progredir direito (observado em telas muito largas) — sem isso, a
+  // tela "inativa" ficaria com display:flex e opacity travada em 1,
+  // sobreposta visualmente à tela ativa. Por isso, depois do tempo da
+  // transição, forçamos display:none na tela inativa de verdade: seja
+  // qual for o estado da opacity nesse momento, ela some da renderização.
+  var SCREEN_TRANSITION_MS = 500;
+  var screenHideTimers = {};
+
   function showScreen(name) {
     Object.keys(screens).forEach(function (key) {
-      screens[key].setAttribute('data-active', key === name ? 'true' : 'false');
+      var el = screens[key];
+      var isActive = key === name;
+
+      if (screenHideTimers[key]) {
+        clearTimeout(screenHideTimers[key]);
+        screenHideTimers[key] = null;
+      }
+
+      if (isActive) {
+        el.style.display = '';
+        el.setAttribute('data-active', 'true');
+      } else {
+        el.setAttribute('data-active', 'false');
+        screenHideTimers[key] = setTimeout(function () {
+          el.style.display = 'none';
+        }, SCREEN_TRANSITION_MS + 80);
+      }
     });
   }
 
@@ -498,6 +550,11 @@
   }
 
   document.getElementById('new-search-button').addEventListener('click', voltarParaBusca);
+
+  // Garante o estado inicial consistente com a rede de segurança do
+  // showScreen (tela de resultado começa com display:none de verdade,
+  // não só opacity:0).
+  showScreen('search');
 
   renderAll();
 })();
