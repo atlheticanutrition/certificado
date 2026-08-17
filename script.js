@@ -297,9 +297,11 @@
     sendErrorEl.textContent = '';
   }
 
-  function setSendBtnState(label, disabled) {
+  function setSendBtnState(label, disabled, variant) {
     sendBtn.textContent = label;
     sendBtn.disabled = disabled;
+    sendBtn.classList.toggle('is-loading', variant === 'loading');
+    sendBtn.classList.toggle('is-success', variant === 'success');
   }
 
   function postCertificado(path, payload) {
@@ -345,18 +347,18 @@
     }
 
     var originalLabel = sendBtn.textContent;
-    setSendBtnState('Gerando PDF…', true);
+    setSendBtnState('Gerando PDF…', true, 'loading');
 
     gerarPdfCertificadoBase64()
       .then(function (pdfBase64) {
         if (!apiReady) {
           throw { serverNotConfigured: true };
         }
-        setSendBtnState('Enviando…', true);
+        setSendBtnState('Enviando…', true, 'loading');
         return enviarCertificadoPorEmail(destino, pdfBase64);
       })
       .then(function () {
-        setSendBtnState('Enviado!', true);
+        setSendBtnState('Enviado!', true, 'success');
         setTimeout(function () {
           setSendBtnState(originalLabel, false);
           voltarParaBusca();

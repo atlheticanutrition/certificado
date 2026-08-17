@@ -29,7 +29,13 @@
   --text-tertiary: #6e6e72;
   --text-placeholder: #8c8c8f;
   --accent-green: #3abf6e;
+  --accent-green-soft: #57d98a;
+  --accent-green-glow: rgba(58, 191, 110, 0.35);
   --accent-red: #e05252;
+  --accent-red-glow: rgba(224, 82, 82, 0.35);
+  --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --ease-standard: cubic-bezier(.4, 0, .2, 1);
 }
 
 * {
@@ -75,13 +81,39 @@ html, body {
 .screen {
   position: absolute;
   inset: 0;
-  display: none;
-  width: 1920px;
-  height: 1080px;
-}
-.screen[data-active="true"] {
   display: flex;
   align-items: stretch;
+  width: 1920px;
+  height: 1080px;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.985);
+  transition: opacity 0.5s var(--ease-standard), transform 0.5s var(--ease-standard);
+}
+.screen[data-active="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+/* Ambient animated glow — purely decorative, sits behind every element
+   (both sidebar and right-panel raise themselves with z-index: 1). */
+.screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(560px circle at 12% 18%, var(--accent-green-glow), transparent 60%),
+    radial-gradient(480px circle at 88% 82%, rgba(255, 255, 255, 0.05), transparent 60%);
+  filter: blur(60px);
+  opacity: 0.55;
+  animation: ambientFloat 16s ease-in-out infinite alternate;
+}
+@keyframes ambientFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(26px, -18px) scale(1.06); }
 }
 
 /* ---------------------------------------------------------------------
@@ -162,15 +194,22 @@ html, body {
 }
 .deco-bar--white {
   height: 420px;
-  background: var(--text-white);
+  background: linear-gradient(180deg, var(--text-white), var(--accent-green-soft));
   left: 330.6px;
   top: 678.7px;
+  opacity: 0.9;
+  animation: decoGlow 5s ease-in-out infinite;
 }
 .deco-bar--gray {
   height: 260px;
   background: var(--text-tertiary);
   left: 418.15px;
   top: 808.1px;
+  animation: decoGlow 5s ease-in-out infinite 0.4s;
+}
+@keyframes decoGlow {
+  0%, 100% { opacity: 0.75; }
+  50%      { opacity: 1; }
 }
 
 /* ---------------------------------------------------------------------
@@ -223,16 +262,28 @@ html, body {
   font-weight: 700;
   font-size: 40px;
   color: var(--text-tertiary);
-  transition: border-color 0.12s ease, border-width 0.12s ease;
+  transition: border-color 0.16s var(--ease-standard), box-shadow 0.25s var(--ease-standard), transform 0.16s var(--ease-standard);
 }
 .digit-box .digit {
   pointer-events: none;
 }
 .digit-box[data-active="true"] {
   border: 3px solid var(--text-white);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.06);
+  animation: digitPulse 1.6s ease-in-out infinite;
 }
 .digit-box[data-filled="true"] {
   color: var(--text-white);
+  animation: digitPop 0.28s var(--ease-standard);
+}
+@keyframes digitPulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.06); }
+  50%      { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.02); }
+}
+@keyframes digitPop {
+  0%   { transform: scale(1.18); }
+  60%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
 }
 
 .error-message {
@@ -242,6 +293,14 @@ html, body {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
+  animation: errorShake 0.4s var(--ease-standard);
+}
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(2px); }
 }
 
 .keypad {
@@ -264,9 +323,13 @@ html, body {
   font-size: 32px;
   cursor: pointer;
   padding: 0;
+  box-shadow: var(--shadow-lift);
+  transition: transform 0.09s var(--ease-standard), background-color 0.15s var(--ease-standard), box-shadow 0.15s var(--ease-standard);
 }
 .key:active {
   background: #262628;
+  transform: scale(0.93);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 .key--back {
   background: var(--bg-key-back);
@@ -276,19 +339,22 @@ html, body {
   background: #1e1e1e;
 }
 .key--confirm {
-  background: var(--text-white);
-  border-color: var(--text-white);
-  color: #0d0d0d;
+  background: linear-gradient(160deg, var(--accent-green-soft), var(--accent-green));
+  border-color: var(--accent-green);
+  color: #072513;
+  box-shadow: 0 6px 20px var(--accent-green-glow);
 }
 .key--confirm:active {
-  background: #e6e6e6;
+  background: var(--accent-green);
+  transform: scale(0.93);
+  box-shadow: 0 3px 10px var(--accent-green-glow);
 }
 
 .submit-button {
   width: 800px;
   height: 90px;
   border-radius: 16px;
-  background: var(--text-white);
+  background: linear-gradient(160deg, #ffffff, #e2e2e4);
   border: none;
   color: #0d0d0d;
   font-family: 'Chakra Petch', sans-serif;
@@ -296,13 +362,51 @@ html, body {
   font-size: 28px;
   cursor: pointer;
   margin-bottom: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.12s var(--ease-standard), box-shadow 0.2s var(--ease-standard), background-color 0.2s var(--ease-standard);
 }
 .submit-button:active {
   background: #e6e6e6;
+  transform: scale(0.98);
+  box-shadow: var(--shadow-lift);
 }
 .submit-button:disabled {
   opacity: 0.4;
   cursor: default;
+  transform: none;
+}
+
+/* Estados dinâmicos do botão ENVIAR (definidos via JS: is-loading / is-success) */
+.submit-button.is-loading {
+  opacity: 0.85;
+  color: #0d0d0d;
+}
+.submit-button.is-loading::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  vertical-align: -4px;
+  border: 3px solid rgba(13, 13, 13, 0.25);
+  border-top-color: #0d0d0d;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.submit-button.is-success {
+  opacity: 1;
+  background: linear-gradient(160deg, var(--accent-green-soft), var(--accent-green));
+  color: #072513;
+  box-shadow: 0 6px 22px var(--accent-green-glow);
+  animation: successPulse 0.5s var(--ease-standard);
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes successPulse {
+  0%   { transform: scale(0.97); }
+  50%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
 }
 
 .support-text {
@@ -327,6 +431,34 @@ html, body {
   height: 64px;
   margin-top: 147px;
   flex-shrink: 0;
+}
+.screen[data-active="true"] .check-badge {
+  animation: badgePop 0.5s var(--ease-standard) 0.1s both;
+}
+.screen[data-active="true"] .title--result,
+.screen[data-active="true"] .instructions--result,
+.screen[data-active="true"] .result-divider,
+.screen[data-active="true"] .result-field,
+.screen[data-active="true"] .result-fields-row {
+  animation: fadeSlideUp 0.5s var(--ease-standard) both;
+}
+.screen[data-active="true"] .title--result       { animation-delay: 0.16s; }
+.screen[data-active="true"] .instructions--result { animation-delay: 0.2s; }
+.screen[data-active="true"] .result-divider       { animation-delay: 0.24s; }
+.screen[data-active="true"] .result-field         { animation-delay: 0.28s; }
+.screen[data-active="true"] .result-fields-row    { animation-delay: 0.32s; }
+/* Nota: a pré-visualização do certificado (.certificate-preview) fica de
+   fora dessas animações de propósito — ela é capturada via html2canvas
+   para gerar o PDF, e não vale o risco de o usuário clicar ENVIAR durante
+   a transição e o PDF sair com opacidade/posição intermediária. */
+@keyframes badgePop {
+  0%   { opacity: 0; transform: scale(0.4); }
+  70%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeSlideUp {
+  0%   { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 .check-badge img {
   position: absolute;
@@ -509,9 +641,13 @@ html, body {
 .email-input::placeholder {
   color: var(--text-placeholder);
 }
+.email-input {
+  transition: border-color 0.18s var(--ease-standard), box-shadow 0.18s var(--ease-standard);
+}
 .email-input:focus {
   outline: none;
-  border-color: var(--text-white);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 4px var(--accent-green-glow);
 }
 
 .submit-button--send {
@@ -533,7 +669,10 @@ html, body {
   font-weight: 700;
   font-size: 17.111px;
   cursor: pointer;
+  transition: transform 0.12s var(--ease-standard), background-color 0.15s var(--ease-standard), border-color 0.15s var(--ease-standard);
 }
 .secondary-button:active {
   background: #262628;
+  border-color: var(--text-tertiary);
+  transform: scale(0.98);
 }
