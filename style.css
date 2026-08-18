@@ -557,7 +557,6 @@ html, body {
   display: flex;
   gap: 19px;
   margin-top: 46px;
-  white-space: nowrap;
 }
 
 .result-field--small {
@@ -567,6 +566,26 @@ html, body {
 .result-value--small {
   font-size: 22px;
   width: auto;
+  max-width: 400px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* Curso/Treinamento ganhou campo próprio de largura cheia (igual ao Nome
+   Completo). Antes ficava lado a lado com Data de Conclusão numa linha
+   "nowrap" pensada pro "BPF" do modelo de exemplo — com o nome real do
+   curso (bem mais longo), a linha estourava a largura da sidebar (520px)
+   e vazava por cima do certificado/e-mail à direita. */
+.result-field--curso {
+  margin-top: 24px;
+}
+
+.result-value--curso {
+  font-size: 20px;
+  line-height: 1.32;
+  width: 400px;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .flex-spacer {
