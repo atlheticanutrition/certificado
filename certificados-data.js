@@ -1,6 +1,6 @@
 // Gerado automaticamente a partir de "assets/Modelo Certificado.xlsx" — NÃO editar à mão.
 // Para atualizar: edite a planilha e rode "node tools/gerar-dados.js" (veja tools/README.md).
-// Gerado em: 2026-08-18T12:47:23.481Z
+// Gerado em: 2026-08-19T11:23:28.732Z
 window.CERTIFICADOS_DATA = [
   {
     "cpf": "04349484469",
