@@ -12,39 +12,44 @@
   <div id="stage">
 
     <!-- ============================================================ -->
-    <!-- TELA 1 — BUSCAR CERTIFICADO (layout centralizado, sem sidebar) -->
+    <!-- TELA 1 — BUSCAR CERTIFICADO                                   -->
     <!-- ============================================================ -->
-    <section class="screen screen--search" id="screen-search" data-active="true">
+    <section class="screen" id="screen-search" data-active="true">
       <img class="bg-photo" src="assets/bg-post.png" alt="" />
-      <div class="search-scrim" aria-hidden="true"></div>
 
-      <div class="search-content">
-        <img class="logo logo--center" src="assets/logo-atlhetica.svg" alt="Atlhetica Nutrition" />
+      <aside class="sidebar">
+        <img class="logo" src="assets/logo-atlhetica.svg" alt="Atlhetica Nutrition" />
 
-        <div class="text-group--center">
-          <h1 class="title title--center">Consulta de Certificado</h1>
-          <p class="instructions instructions--center">Digite os últimos 4 dígitos do seu CPF e o ano de nascimento para localizar seu certificado.</p>
+        <div class="text-group">
+          <h1 class="title">Consulta de<br />Certificado</h1>
+          <p class="instructions">Digite os últimos 4 dígitos do seu CPF e o ano de nascimento para localizar seu certificado.</p>
         </div>
 
-        <div class="fields-row">
-          <div class="field-group">
-            <p class="field-label">CPF (ÚLTIMOS 4 DÍGITOS)</p>
-            <div class="digit-row" id="cpf-row">
-              <div class="digit-box" data-field="cpf" data-index="0"><span class="digit">–</span></div>
-              <div class="digit-box" data-field="cpf" data-index="1"><span class="digit">–</span></div>
-              <div class="digit-box" data-field="cpf" data-index="2"><span class="digit">–</span></div>
-              <div class="digit-box" data-field="cpf" data-index="3"><span class="digit">–</span></div>
-            </div>
-          </div>
+        <div class="deco-bar deco-bar--white" aria-hidden="true"></div>
+        <div class="deco-bar deco-bar--gray" aria-hidden="true"></div>
+      </aside>
 
-          <div class="field-group">
-            <p class="field-label">ANO DE NASCIMENTO</p>
-            <div class="digit-row" id="ano-row">
-              <div class="digit-box" data-field="ano" data-index="0"><span class="digit">–</span></div>
-              <div class="digit-box" data-field="ano" data-index="1"><span class="digit">–</span></div>
-              <div class="digit-box" data-field="ano" data-index="2"><span class="digit">–</span></div>
-              <div class="digit-box" data-field="ano" data-index="3"><span class="digit">–</span></div>
-            </div>
+      <div class="divider"></div>
+
+      <div class="right-panel">
+
+        <div class="field-group">
+          <p class="field-label">CPF (ÚLTIMOS 4 DÍGITOS)</p>
+          <div class="digit-row" id="cpf-row">
+            <div class="digit-box" data-field="cpf" data-index="0"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="cpf" data-index="1"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="cpf" data-index="2"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="cpf" data-index="3"><span class="digit">–</span></div>
+          </div>
+        </div>
+
+        <div class="field-group field-group--ano">
+          <p class="field-label">ANO DE NASCIMENTO</p>
+          <div class="digit-row" id="ano-row">
+            <div class="digit-box" data-field="ano" data-index="0"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="ano" data-index="1"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="ano" data-index="2"><span class="digit">–</span></div>
+            <div class="digit-box" data-field="ano" data-index="3"><span class="digit">–</span></div>
           </div>
         </div>
 

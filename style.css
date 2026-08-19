@@ -155,7 +155,7 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.035;
+  opacity: 0.1;
   pointer-events: none;
 }
 
@@ -188,6 +188,15 @@ html, body {
   flex-shrink: 0;
 }
 
+.text-group {
+  margin-top: 217px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 19px;
+  width: 400px;
+}
+
 .title {
   margin: 0;
   font-weight: 700;
@@ -206,79 +215,35 @@ html, body {
   width: 400px;
 }
 
-/* ---------------------------------------------------------------------
-   Search screen — layout centralizado (sem sidebar)
-
-   A tela de busca deixou de usar a divisão sidebar/right-panel: tudo
-   (logo, título, campos, teclado, botão) fica numa única coluna
-   centralizada na tela inteira. `.screen--search` centraliza esse bloco
-   horizontalmente (herda display:flex + align-items:stretch de .screen);
-   `.search-content` centraliza verticalmente dentro da altura cheia.
-   --------------------------------------------------------------------- */
-.screen--search {
-  justify-content: center;
-}
-
-/* Sem a sidebar sólida cobrindo a esquerda, a .bg-photo (mesmo com
-   opacidade baixa) tem texto/logo em branco que fica legível atrás do
-   conteúdo, que agora ocupa quase a tela inteira — não sobra "canto"
-   livre onde valha a pena mostrar a foto por inteiro. Este véu escurece
-   a tela toda de forma uniforme, deixando a foto como textura de fundo
-   discreta em vez de concorrer com o texto da UI. */
-.search-scrim {
+/* Decorative diagonal bars (search screen) */
+.deco-bar {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: rgba(0, 0, 0, 0.55);
+  width: 14px;
+  border-radius: 7px;
+  transform: rotate(28deg);
 }
-
-.search-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 24px;
+.deco-bar--white {
+  height: 420px;
+  background: linear-gradient(180deg, var(--text-white), var(--accent-green-soft));
+  left: 330.6px;
+  top: 678.7px;
+  opacity: 0.9;
+  animation: decoGlow 5s ease-in-out infinite;
 }
-
-.logo--center {
-  margin-bottom: 44px;
+.deco-bar--gray {
+  height: 260px;
+  background: var(--text-tertiary);
+  left: 418.15px;
+  top: 808.1px;
+  animation: decoGlow 5s ease-in-out infinite 0.4s;
 }
-
-.text-group--center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: auto;
-  max-width: 720px;
-  margin-bottom: 56px;
-}
-
-.title--center {
-  text-align: center;
-  width: auto;
-}
-
-.instructions--center {
-  text-align: center;
-  width: auto;
-  max-width: 620px;
-}
-
-.fields-row {
-  display: flex;
-  gap: 64px;
-  margin-bottom: 40px;
-}
-.fields-row > .field-group {
-  margin-bottom: 0;
+@keyframes decoGlow {
+  0%, 100% { opacity: 0.75; }
+  50%      { opacity: 1; }
 }
 
 /* ---------------------------------------------------------------------
-   Right panel — result screen
+   Right panel — search screen
    --------------------------------------------------------------------- */
 .right-panel {
   position: relative;
@@ -298,6 +263,9 @@ html, body {
   gap: 23px;
   width: 800px;
   margin-bottom: 40px;
+}
+.field-group--ano {
+  margin-bottom: 60px;
 }
 
 .field-label {
@@ -973,41 +941,12 @@ html, body {
     display: none;
   }
 
-  /* --- Search screen (layout centralizado) -------------------------- */
-  .screen--search {
-    justify-content: flex-start;
+  .deco-bar {
+    display: none;
   }
 
-  .search-content {
-    width: 100%;
-    justify-content: flex-start;
-    padding: clamp(28px, 8vw, 44px) 20px clamp(24px, 8vw, 40px);
-  }
-
-  .logo--center {
-    width: 140px;
-    height: auto;
-    margin-bottom: 20px;
-  }
-
-  .text-group--center {
-    width: 100%;
-    max-width: 440px;
-    gap: 10px;
-    margin-bottom: 28px;
-  }
-
-  .fields-row {
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    width: 100%;
-    margin-bottom: 0;
-  }
-  /* .field-group já ganha margin-bottom:22px da regra genérica abaixo
-     (era compartilhada com o right-panel do resultado). */
-
-  /* --- Sidebar (resultado) ------------------------------------------ */
+  /* --- Sidebar (logo, título, instruções) -------------------------- */
+  .sidebar,
   .sidebar--result {
     width: 100%;
     height: auto;
@@ -1019,6 +958,14 @@ html, body {
   .logo {
     width: 140px;
     height: auto;
+  }
+
+  .text-group {
+    margin-top: 24px;
+    align-items: center;
+    width: 100%;
+    max-width: 440px;
+    gap: 10px;
   }
 
   .title {
@@ -1097,7 +1044,8 @@ html, body {
     font-size: 12.5px;
   }
 
-  /* --- Right panel (resultado: certificado, e-mail) ------------------ */
+  /* --- Right panel (campos, teclado, botões, certificado) ----------- */
+  .right-panel,
   .right-panel--result {
     width: 100%;
     height: auto;
@@ -1109,6 +1057,9 @@ html, body {
     max-width: 420px;
     gap: 12px;
     margin-bottom: 22px;
+  }
+  .field-group--ano {
+    margin-bottom: 28px;
   }
 
   .field-label,
